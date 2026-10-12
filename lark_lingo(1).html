@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Lark Lingo — Word Studio</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/3.0.3/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{--ink:#1a1a2e;--mut:#7a7a99;--cream:#fdf8f0;--panel:#fff;--bd:#d4c9b8;--acc:#b85c38;--gold:#e8b84b;--field:#fdf8f0}
+@media(prefers-color-scheme:dark){:root{--ink:#f5ede0;--mut:#9a9ab8;--cream:#14142a;--panel:#1c1c38;--bd:#3a3a62;--field:#14142a}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+header{background:#1a1a2e;color:#fff;padding:14px 28px;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'DM Serif Display',serif;font-size:1.7rem;color:#e8b84b}
+.sub{font-size:.68rem;letter-spacing:1.5px;text-transform:uppercase;opacity:.65}
+.layout{display:grid;grid-template-columns:350px 1fr;min-height:calc(100vh - 64px)}
+aside{background:var(--panel);border-right:1px solid var(--bd);padding:20px;display:flex;flex-direction:column;gap:13px}
+.tabs{display:flex;border:1px solid var(--bd);border-radius:6px;overflow:hidden}
+.tabs button{flex:1;padding:9px 4px;font:700 .72rem 'DM Sans',sans-serif;letter-spacing:.8px;text-transform:uppercase;border:0;background:transparent;color:var(--mut);cursor:pointer}
+.tabs button.on{background:#1a1a2e;color:#fff}
+label{display:block;font-size:.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mut);margin-bottom:5px}
+input[type=text],textarea,select{width:100%;padding:9px 11px;border:1px solid var(--bd);border-radius:5px;font:.9rem 'DM Sans',sans-serif;color:var(--ink);background:var(--field);outline:none}
+input:focus,textarea:focus,select:focus{border-color:var(--acc)}
+textarea{min-height:210px;line-height:1.6;resize:vertical;white-space:pre}
+.hint{font-size:.7rem;color:var(--mut);margin-top:4px;line-height:1.45}
+.row{display:flex;gap:8px}.row>*{flex:1}
+.btn{padding:10px 6px;font:700 .72rem 'DM Sans',sans-serif;letter-spacing:.8px;text-transform:uppercase;border:1.5px solid var(--bd);background:var(--panel);color:var(--ink);border-radius:5px;cursor:pointer}
+.btn:hover{border-color:var(--acc);color:var(--acc)}
+.chk{display:flex;gap:8px;align-items:center;font-size:.82rem;text-transform:none;letter-spacing:0;color:var(--ink);font-weight:500}
+main{padding:28px;overflow:auto;display:flex;justify-content:center;align-items:flex-start}
+#card{--bg:#fff;--tx:#1a1a2e;--rb:#fdf0c8;--rd:#e8b84b;--ce:#fdf8f0;--b:#d4c9b8;--p:#2d6a4f;--s:#b85c38;--pb:#6a4c93;--m:#6f6f8c;
+background:var(--bg);color:var(--tx);border:1.5px solid var(--b);border-radius:10px;padding:30px 34px 34px;box-shadow:0 6px 30px rgba(0,0,0,.08);flex:none}
+#card.ocean{--bg:#f4faff;--tx:#0b2545;--rb:#cfe8ff;--rd:#3a86c8;--ce:#eaf4fc;--b:#b6d4ea;--p:#1d7a5f;--s:#c2571a;--pb:#5b3fa0}
+#card.forest{--bg:#f6faf4;--tx:#1b3a2a;--rb:#d8efc9;--rd:#5a9a3c;--ce:#edf5e8;--b:#bcd4b0;--p:#8a4b9a;--s:#b5532b;--pb:#2a6f97}
+#card.night{--bg:#1a1a2e;--tx:#f5ede0;--rb:#3a3560;--rd:#e8b84b;--ce:#25254a;--b:#3f3f6e;--p:#7fd6a8;--s:#ff9d76;--pb:#c9a7ff;--m:#a5a5c8}
+.hd{text-align:center;border-bottom:1.5px solid var(--b);padding-bottom:16px;margin-bottom:20px}
+.org{font-size:.68rem;letter-spacing:2px;text-transform:uppercase;color:var(--m);margin-bottom:8px}
+.tag{display:inline-block;font-size:.62rem;letter-spacing:2px;text-transform:uppercase;color:var(--s);border:1px solid var(--s);padding:2px 10px;border-radius:2px}
+.rt{display:inline-block;background:var(--rb);border:2px solid var(--rd);border-radius:8px;padding:9px 28px;margin-top:12px}
+.rt h2{font:400 2rem 'DM Serif Display',serif;letter-spacing:2px;text-transform:uppercase}
+.rt p{font-size:.8rem;font-style:italic;color:var(--m);margin-top:2px}
+.r{font-weight:700}.p{color:var(--p);font-style:normal}.s{color:var(--s);font-style:normal}
+.legend{text-align:center;font-size:.68rem;color:var(--m);margin-top:16px}
+mark{background:var(--rb);color:inherit;border-radius:3px;padding:0 3px;font-weight:700}
+.warn{color:#c0392b;font-style:italic}
+/* web */
+.web{position:relative;width:780px;height:660px;margin:0 auto}
+.web svg{position:absolute;left:0;top:0}.web line{stroke-width:2;stroke-linecap:round}
+.hub{position:absolute;left:390px;top:330px;transform:translate(-50%,-50%);width:136px;height:136px;border-radius:50%;background:var(--rb);border:2.5px solid var(--rd);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:10px;z-index:2}
+.hub b{font:400 1.5rem 'DM Serif Display',serif}.hub small{font-size:.62rem;font-style:italic;color:var(--m);line-height:1.25;margin-top:3px}
+.pill{position:absolute;transform:translate(-50%,-50%);background:var(--ce);border:1.5px solid var(--b);border-radius:20px;padding:6px 14px;font-size:.98rem;white-space:nowrap;cursor:pointer;z-index:3;transition:transform .15s,box-shadow .15s}
+.pill:hover{transform:translate(-50%,-50%) scale(1.08)}
+.pill.sel{border-color:var(--rd);box-shadow:0 0 0 3px var(--rb);background:var(--bg)}
+.pill.no{border-style:dashed;opacity:.75}
+.elab{position:absolute;transform:translate(-50%,-50%);font-size:.66rem;font-weight:700;background:var(--bg);padding:1px 6px;border-radius:8px;z-index:2;white-space:nowrap}
+.insp{margin-top:6px;border:1.5px solid var(--b);background:var(--ce);border-radius:9px;padding:14px 18px;text-align:center}
+.insp .iw{font:400 1.8rem 'DM Serif Display',serif}.insp .ib{font-size:.78rem;color:var(--m);margin:2px 0 6px;letter-spacing:.5px}
+.insp .is{font-style:italic;margin-top:6px}
+.pos{font-size:.66rem;letter-spacing:1px;text-transform:uppercase;background:var(--rb);border-radius:3px;padding:1px 7px;color:var(--tx)}
+/* matrix */
+.mx{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:22px}
+.col h4{font-size:.66rem;letter-spacing:1.5px;text-transform:uppercase;color:var(--m);text-align:center;margin-bottom:8px}
+.chip{border:1.5px solid var(--b);border-radius:8px;padding:7px 10px;margin-bottom:7px;background:var(--ce);text-align:center}
+.chip b{font:400 1.1rem 'DM Serif Display',serif}.chip span{display:block;font-size:.68rem;color:var(--m)}
+.chip.p b{color:var(--p)}.chip.s b{color:var(--s)}
+.base{background:var(--rb);border:2px solid var(--rd);border-radius:10px;padding:18px 10px;text-align:center}
+.base b{font:400 1.9rem 'DM Serif Display',serif}.base span{display:block;font-size:.76rem;font-style:italic;color:var(--m);margin-top:4px}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th{background:#1a1a2e;color:#fff;text-align:left;padding:8px 10px;font-size:.64rem;letter-spacing:1.2px;text-transform:uppercase;font-weight:500}
+td{padding:8px 10px;border-bottom:1px solid var(--b);vertical-align:top}tr:nth-child(even) td{background:var(--ce)}
+td.w{font:400 1.1rem 'DM Serif Display',serif;white-space:nowrap}td.bd,.bd{font-size:.76rem;color:var(--m)}
+.em{text-align:center;color:var(--m);padding:20px}
+/* display */
+.grid{display:grid;gap:12px}
+.cell{border:1.5px solid var(--b);border-radius:9px;padding:16px 12px;text-align:center;background:var(--ce)}
+.cell .w{font:400 1.7rem 'DM Serif Display',serif;margin:4px 0}
+.cell .df{font-size:.82rem;margin-top:6px}.cell .sn{font-size:.78rem;font-style:italic;color:var(--m);margin-top:5px;line-height:1.4}
+.cell.hide{cursor:pointer}.cell.hide .rev{visibility:hidden}
+#pres{position:fixed;inset:0;background:#1a1a2e;color:#fff;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:9;text-align:center;padding:30px}
+#pres.on{display:flex}#pres .w{font:400 clamp(3rem,12vw,8rem) 'DM Serif Display',serif;line-height:1.1}
+#pres .r{color:#e8b84b}#pres .p{color:#7fd6a8}#pres .s{color:#ff9d76}
+#pres .d{font-size:1.4rem;opacity:.9}#pres .sn{font-size:1.15rem;font-style:italic;opacity:.75;max-width:800px}#pres .n{font-size:.8rem;opacity:.55}
+#pres .btn{background:transparent;color:#fff;border-color:#666}
+@media(max-width:860px){.layout{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid var(--bd)}main{padding:12px;justify-content:flex-start}}
+</style>
+</head>
+<body>
+<header><div><div class="logo">Lark Lingo</div><div class="sub">Word Web · Matrix · Display</div></div><span class="sub">Lark Capacita</span></header>
+<div class="layout">
+<aside>
+ <div class="tabs" id="tabs"><button data-m="web" class="on">Word Web</button><button data-m="matrix">Matrix</button><button data-m="display">Display</button></div>
+ <div><label for="brand">Heading line</label><input type="text" id="brand"></div>
+ <div class="row"><div><label for="root">Root word</label><input type="text" id="root"></div><div><label for="theme">Theme</label><select id="theme"><option value="">Cream</option><option value="ocean">Ocean</option><option value="forest">Forest</option><option value="night">Night</option></select></div></div>
+ <div><label for="mean">Root meaning</label><input type="text" id="mean"></div>
+ <label class="chk"><input type="checkbox" id="auto" checked> Auto-fill from dictionary</label>
+ <div class="row"><div><label for="max">Max words</label><select id="max"><option>8</option><option selected>14</option><option>24</option></select></div><label class="chk" style="margin-top:20px"><input type="checkbox" id="comp"> Include compounds</label></div>
+ <button class="btn" id="gen">↻ Generate meaning, derivations &amp; sentences</button>
+ <div class="hint" id="st"></div>
+ <div><label for="words">Derived words</label><textarea id="words" spellcheck="false"></textarea>
+  <div class="hint">One per line: <b>word | part of speech | meaning | sentence</b>. Type any root above and this fills itself; you can also edit or add lines. Web shows up to 14 words.</div></div>
+ <div data-for="display"><label for="cols">Cards per row</label><select id="cols"><option>2</option><option selected>3</option><option>4</option></select></div>
+ <label class="chk" data-for="display"><input type="checkbox" id="hidem"> Hide meaning &amp; sentence (click card to reveal)</label>
+ <label class="chk"><input type="checkbox" id="leg" checked> Show colour key</label>
+ <button class="btn" id="pbtn" data-for="display">▶ Present full-screen</button>
+ <div class="row"><button class="btn" data-x="png">PNG</button><button class="btn" data-x="jpg">JPG</button><button class="btn" data-x="pdf">PDF</button><button class="btn" data-x="copy">Copy</button></div>
+ <button class="btn" id="reset">Reset sample data</button>
+</aside>
+<main><div id="card"></div></main>
+</div>
+<div id="pres"><div class="n" id="pn"></div><div class="w" id="pw"></div><div class="bd" id="pb"></div><div class="d" id="pd"></div><div class="sn" id="ps"></div>
+<div style="display:flex;gap:10px;margin-top:10px"><button class="btn" id="pp">← Prev</button><button class="btn" id="pm">Meaning</button><button class="btn" id="pnx">Next →</button><button class="btn" id="px">Close ✕</button></div></div>
+<script>
+const $=id=>document.getElementById(id),Q=s=>Array.from(document.querySelectorAll(s));
+const esc=s=>String(s==null?'':s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PRE={un:'not, opposite of',re:'again, back',in:'not, into',im:'not, into',il:'not',ir:'not',dis:'apart, not',mis:'wrongly',pre:'before',post:'after',de:'down, away',ex:'out',sub:'under',trans:'across',inter:'between',over:'too much',under:'below',out:'beyond',non:'not',fore:'before',anti:'against',co:'together',en:'make, put into',em:'make, put into',pro:'forward',con:'with',com:'with',super:'above',semi:'half',mid:'middle',ab:'away',ad:'toward',a:'on, toward',bi:'two',tri:'three',multi:'many',auto:'self',counter:'against',back:'behind',up:'upward',down:'downward',extra:'beyond',ultra:'beyond',hyper:'excess',micro:'small',macro:'large',mono:'one',poly:'many',pseudo:'false',uni:'one',sub:'under',intra:'within',with:'against, back'};
+const SUF={s:'more than one',es:'more than one',d:'past tense',ed:'past tense',ing:'action in progress',er:'one who / more',or:'one who',est:'most',ion:'act or state of',tion:'act or state of',ation:'act or state of',ator:'one who',ment:'result or act of',able:'able to be',ible:'able to be',ably:'in a way that can be',ibly:'in a way that can be',al:'relating to',ial:'relating to',ive:'tending to',ively:'in a way',ness:'state of being',ly:'in a way',ally:'in a way',ful:'full of',less:'without',y:'characterised by',ist:'one who practises',ity:'state of',ous:'full of',ize:'make',ise:'make',ization:'process of making',en:'become',ant:'one who',ent:'one who',ance:'state of',ence:'state of',ish:'like',ship:'state of',hood:'state of',ism:'belief in',ify:'make',age:'result of',ory:'place or tool for',ary:'relating to',ure:'result of',ic:'relating to',ical:'relating to',dom:'state of',ee:'one who receives',let:'small one',ling:'small one',ward:'direction',wise:'in a manner'};
+const ROOTS={};'aud=to hear;bio=life;cred=to believe;dict=to say, to speak;duct=to lead;geo=earth;graph=to write, to draw;ject=to throw;log=word, study;mit=to send;miss=to send;rupt=to break;scrib=to write;script=to write;spect=to look, to see;struct=to build;tele=far;tract=to pull, to drag;vert=to turn;vid=to see;vis=to see;voc=to call;phon=sound;photo=light;chron=time;hydr=water;therm=heat;ped=foot;mort=death;nov=new;plic=to fold;sect=to cut;sens=to feel;vit=life;viv=to live;fract=to break;flect=to bend;gress=to step, to go;cede=to go, to yield;cept=to take;clud=to close;lect=to read, to choose;jud=to judge;jur=law, to swear;loc=place;lumin=light;meter=measure;path=feeling, suffering;scope=to view;aqua=water;ambul=to walk'.split(';').forEach(t=>{const a=t.split('=');ROOTS[a[0]]=a[1]});
+const SAMPLE={brand:'Lark Capacita',root:'move',mean:'to change place or position',theme:'',cols:'3',hidem:false,leg:true,auto:true,max:'14',comp:false,
+words:'unmoved | adj. | not changed in position or feeling | He stood unmoved by the noise.\nmoving | adj. | touching the emotions | It was a moving speech.\nmovable | adj. | able to be moved | A movable partition divides the hall.\nmovie | n. | a film, from "moving picture" | We watched a movie together.\nmovement | n. | an act of moving | The movement of the clouds was slow.\nmovements | n. | more than one act of moving | Her movements were graceful.\nremove | v. | to take away | Please remove your shoes.\nremoval | n. | the act of taking away | The removal of the desk made room.\nmover | n. | one who moves things | The mover lifted the box.\nunremovable | adj. | cannot be taken away | The stain was unremovable.'};
+let S=Object.assign({},SAMPLE,{sel:0}),mode='web';
+try{const t=JSON.parse(localStorage.getItem('lark_lingo')||'null');if(t&&typeof t==='object')S=Object.assign(S,t.S||{});if(t&&t.mode)mode=t.mode}catch(e){}
+if(!['web','matrix','display'].includes(mode))mode='web';
+function seg(s,D){if(!s)return[];const out=[];let i=0;
+ while(i<s.length){let m='';for(const k in D){if(s.startsWith(k,i)&&k.length>m.length)m=k}
+  if(!m)return[s];out.push(m);i+=m.length}return out}
+function an(w,r){const lw=w.toLowerCase(),lr=(r||'').trim().toLowerCase();if(!lr)return{ok:false};
+ const tries=[lr];if(/e$/.test(lr)&&lr.length>3)tries.push(lr.slice(0,-1));if(/y$/.test(lr))tries.push(lr.slice(0,-1)+'i');
+ for(const t of tries){const i=lw.indexOf(t);if(i>=0){
+  const pre=w.slice(0,i);let mid=w.slice(i,i+t.length),suf=w.slice(i+t.length);
+  const ps=seg(pre.toLowerCase(),PRE);let ss=seg(suf.toLowerCase(),SUF);
+  if(suf.length>1&&suf[0].toLowerCase()===t.slice(-1)&&!ss.every(k=>SUF[k])){const s2=seg(suf.slice(1).toLowerCase(),SUF);if(s2.length&&s2.every(k=>SUF[k])){mid+=suf[0];suf=suf.slice(1);ss=s2}}
+  if(/e$/.test(lr)){if(ss[0]==='d')ss[0]='ed';else if(ss[0]==='r')ss[0]='er';else if(ss[0]==='rs')ss.splice(0,1,'er','s')}
+  return{ok:true,pre,mid,suf,ps,ss}}}
+ return{ok:false}}
+const isDer=(w,r)=>{const a=an(w,r);return a.ok&&a.ps.length+a.ss.length>0&&a.ps.every(k=>PRE[k])&&a.ss.every(k=>SUF[k])};
+const hw=(w,r)=>{const a=an(w,r);return a.ok?`<i class="p">${esc(a.pre)}</i><b class="r">${esc(a.mid)}</b><i class="s">${esc(a.suf)}</i>`:esc(w)};
+const bd=(a,r)=>a.ok?a.ps.map(x=>x+'-').concat([r.trim()],a.ss.map(x=>'-'+x)).join(' + '):'<span class="warn">root not found in this word</span>';
+const hs=(sen,w)=>{const e=esc(sen);try{return e.replace(new RegExp(esc(w).replace(/[.*+?^${}()|[\]\\]/g,'\\$&'),'i'),m=>`<mark>${m}</mark>`)}catch(_){return e}};
+function parse(t){return String(t).split('\n').map(l=>l.trim()).filter(Boolean).map(l=>{const a=l.split('|').map(x=>x.trim());return{w:a[0].replace(/\s+/g,' '),pos:a[1]||'',def:a[2]||'',sen:a[3]||''}}).filter(x=>x.w)}
+const head=tag=>`<div class="hd"><div class="org">${esc(S.brand)}</div><span class="tag">${tag}</span><br><div class="rt"><h2>${esc(S.root)||'—'}</h2>${S.mean?`<p>${esc(S.mean)}</p>`:''}</div></div>`;
+const key='<div class="legend"><b class="p">prefix</b> · <b class="r">root</b> · <b class="s">suffix</b></div>';
+const posb=x=>x.pos?`<span class="pos">${esc(x.pos)}</span>`:'';
+function web(W){const L=W.slice(0,14),n=L.length;if(!n)return head('Word Web')+'<div class="em">Add derived words on the left.</div>';
+ if(S.sel>=n||S.sel<0)S.sel=0;let ln='',pl='',lb='';
+ L.forEach((x,k)=>{const a=an(x.w,S.root),ang=-Math.PI/2+2*Math.PI*k/n,px=390+300*Math.cos(ang),py=330+255*Math.sin(ang);
+  const hasP=a.ok&&a.ps.length,hasS=a.ok&&a.ss.length,col=!a.ok?'var(--m)':hasP&&hasS?'var(--pb)':hasP?'var(--p)':hasS?'var(--s)':'var(--rd)';
+  ln+=`<line x1="390" y1="330" x2="${px.toFixed(1)}" y2="${py.toFixed(1)}" stroke="${col}"${a.ok?'':' stroke-dasharray="5 5"'}/>`;
+  const lab=a.ok?a.ps.map(q=>q+'-').concat(a.ss.map(q=>'-'+q)).join(' '):'';
+  if(lab)lb+=`<div class="elab" style="left:${(390+(px-390)*.52).toFixed(1)}px;top:${(330+(py-330)*.52).toFixed(1)}px;color:${col}">${esc(lab)}</div>`;
+  pl+=`<div class="pill${k===S.sel?' sel':''}${a.ok?'':' no'}" data-i="${k}" style="left:${px.toFixed(1)}px;top:${py.toFixed(1)}px">${hw(x.w,S.root)}</div>`});
+ const x=L[S.sel],a=an(x.w,S.root);
+ return head('Word Web').replace(/<div class="rt">[\s\S]*<\/div><\/div>$/,'</div>')+
+ `<div class="web"><svg width="780" height="660">${ln}</svg><div class="hub"><b>${esc(S.root)}</b><small>${esc(S.mean)}</small></div>${lb}${pl}</div>
+ <div class="insp"><div class="iw">${hw(x.w,S.root)}</div><div class="ib">${bd(a,S.root)}</div><div>${posb(x)} ${esc(x.def)}</div>${x.sen?`<div class="is">“${hs(x.sen,x.w)}”</div>`:''}</div>`}
+function chips(W,type){const D=type==='p'?PRE:SUF,seen={};
+ W.forEach(x=>{const a=an(x.w,S.root);if(!a.ok)return;(type==='p'?a.ps:a.ss).forEach(k=>{(seen[k]=seen[k]||[]).push(x.w)})});
+ const ks=Object.keys(seen);if(!ks.length)return'<div class="em">—</div>';
+ return ks.map(k=>`<div class="chip ${type}"><b>${type==='p'?esc(k)+'-':'-'+esc(k)}</b><span>${esc(D[k]||'affix')}</span><span>${seen[k].length} word${seen[k].length>1?'s':''}</span></div>`).join('')}
+function matrix(W){
+ const mx=`<div class="mx"><div class="col"><h4>Prefixes</h4>${chips(W,'p')}</div><div class="col"><h4>Root</h4><div class="base"><b>${esc(S.root)}</b><span>${esc(S.mean)}</span></div></div><div class="col"><h4>Suffixes</h4>${chips(W,'s')}</div></div>`;
+ const tb=W.length?`<table><tr><th>Word</th><th>Build</th><th>Meaning</th><th>Sentence</th></tr>${W.map(x=>`<tr><td class="w">${hw(x.w,S.root)}<br>${posb(x)}</td><td class="bd">${bd(an(x.w,S.root),S.root)}</td><td>${esc(x.def)}</td><td><i>${x.sen?hs(x.sen,x.w):''}</i></td></tr>`).join('')}</table>`:'<div class="em">Add derived words on the left.</div>';
+ return head('Word Matrix')+mx+tb}
+function display(W){if(!W.length)return head('Word Display')+'<div class="em">Add derived words on the left.</div>';
+ return head('Word Display')+`<div class="grid" style="grid-template-columns:repeat(${+S.cols||3},1fr)">${W.map(x=>`<div class="cell${S.hidem?' hide':''}" data-card="1">${posb(x)}<div class="w">${hw(x.w,S.root)}</div><div class="bd">${bd(an(x.w,S.root),S.root)}</div><div class="rev"><div class="df">${esc(x.def)}</div>${x.sen?`<div class="sn">“${hs(x.sen,x.w)}”</div>`:''}</div></div>`).join('')}</div>`}
+function render(){const W=parse(S.words),c=$('card');c.className=S.theme||'';
+ c.style.width=mode==='web'?'860px':'780px';
+ c.innerHTML=(mode==='web'?web(W):mode==='matrix'?matrix(W):display(W))+(S.leg?key:'')}
+function persist(){try{localStorage.setItem('lark_lingo',JSON.stringify({S,mode}))}catch(e){}}
+function sync(){Q('[data-for]').forEach(e=>e.style.display=e.dataset.for.split(' ').includes(mode)?'':'none');
+ Q('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.m===mode))}
+function fill(){['brand','root','mean','words','theme','cols','max'].forEach(k=>$(k).value=S[k]);['hidem','leg','auto','comp'].forEach(k=>$(k).checked=!!S[k])}
+function read(){['brand','root','mean','words','theme','cols','max'].forEach(k=>S[k]=$(k).value);['hidem','leg','auto','comp'].forEach(k=>S[k]=$(k).checked)}
+const upd=()=>{read();render();persist()};
+Q('#brand,#root,#mean,#words,#theme,#cols,#hidem,#leg,#max,#auto,#comp').forEach(e=>e.addEventListener('input',upd));
+$('tabs').addEventListener('click',e=>{const m=e.target.dataset&&e.target.dataset.m;if(!m)return;mode=m;sync();render();persist()});
+$('reset').addEventListener('click',()=>{S=Object.assign({},SAMPLE,{sel:0});fill();render();persist()});
+$('card').addEventListener('click',e=>{const p=e.target.closest('[data-i]');if(p){S.sel=+p.dataset.i;render();persist();return}
+ const c=e.target.closest('[data-card]');if(c&&S.hidem)c.classList.toggle('hide')});
+/* presenter */
+let pi=0,pw=[],showD=false;
+function pshow(){const x=pw[pi],a=an(x.w,S.root);$('pw').innerHTML=hw(x.w,S.root);$('pb').innerHTML=bd(a,S.root);
+ $('pd').textContent=showD?[x.pos,x.def].filter(Boolean).join(' — '):'';$('ps').innerHTML=showD&&x.sen?'“'+hs(x.sen,x.w)+'”':'';
+ $('pn').textContent=`${pi+1} / ${pw.length} · root: ${S.root}`}
+$('pbtn').addEventListener('click',()=>{pw=parse(S.words);if(!pw.length)return;pi=0;showD=false;$('pres').classList.add('on');pshow()});
+const step=d=>{if(!pw.length)return;pi=(pi+d+pw.length)%pw.length;pshow()};
+$('pp').onclick=()=>step(-1);$('pnx').onclick=()=>step(1);$('pm').onclick=()=>{showD=!showD;pshow()};$('px').onclick=()=>$('pres').classList.remove('on');
+document.addEventListener('keydown',e=>{if(!$('pres').classList.contains('on'))return;
+ if(e.key==='ArrowRight'||e.key===' '){e.preventDefault();step(1)}else if(e.key==='ArrowLeft')step(-1);else if(e.key==='Escape')$('px').click();else if(e.key==='m'||e.key==='M'){showD=!showD;pshow()}});
+/* export */
+function dl(url,name){const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove()}
+document.addEventListener('click',async e=>{const b=e.target.closest('[data-x]');if(!b)return;const f=b.dataset.x,t=b.textContent;
+ if(typeof html2canvas==='undefined'){alert('Export needs the html2canvas library, which could not load. Please check your internet connection and reload.');return}
+ b.textContent='…';
+ try{if(document.fonts&&document.fonts.ready)await document.fonts.ready;
+  const c=await html2canvas($('card'),{scale:2,backgroundColor:null,useCORS:true}),nm='lark-lingo-'+mode+'-'+(S.root||'word').replace(/[^\w]+/g,'_');
+  if(f==='png')dl(c.toDataURL('image/png'),nm+'.png');
+  else if(f==='jpg'){const o=document.createElement('canvas');o.width=c.width;o.height=c.height;const x=o.getContext('2d');x.fillStyle='#ffffff';x.fillRect(0,0,o.width,o.height);x.drawImage(c,0,0);dl(o.toDataURL('image/jpeg',.95),nm+'.jpg')}
+  else if(f==='pdf'){if(!window.jspdf){alert('PDF library could not load. Check your connection.')}else{const w=c.width/2,h=c.height/2,m=24,P=new window.jspdf.jsPDF({unit:'px',format:[w+2*m,h+2*m],orientation:w>h?'l':'p'});P.addImage(c.toDataURL('image/png'),'PNG',m,m,w,h);P.save(nm+'.pdf')}}
+  else{const bl=await new Promise(r=>c.toBlob(r,'image/png'));try{await navigator.clipboard.write([new ClipboardItem({'image/png':bl})]);b.textContent='Copied';setTimeout(()=>b.textContent=t,1300);return}catch(_){alert('Copy is not supported in this browser — use PNG instead.')}}
+ }catch(err){alert('Export failed: '+(err&&err.message||err))}
+ b.textContent=t});
+/* auto-generate: meaning, derivations, examples */
+const cache={},POSM={noun:'n.',verb:'v.',adjective:'adj.',adverb:'adv.',pronoun:'pron.',preposition:'prep.',conjunction:'conj.',interjection:'interj.',n:'n.',v:'v.',adj:'adj.',adv:'adv.'};
+let rid=0,tmr=null;
+const setSt=t=>{$('st').textContent=t},clean=s=>String(s||'').replace(/\s+/g,' ').replace(/\|/g,'/').trim();
+const short=(s,n)=>{s=clean(s);return s.length>n?s.slice(0,n-1).replace(/\s+\S*$/,'')+'…':s};
+async function jget(u){try{if(typeof fetch==='undefined')return null;const c=new AbortController(),t=setTimeout(()=>c.abort(),8000);
+ const r=await fetch(u,{signal:c.signal});clearTimeout(t);if(!r.ok)return r.status===404?[]:null;return await r.json()}catch(e){return null}}
+function pdict(j,want){if(!Array.isArray(j))return null;const ms=[];j.forEach(e=>(e.meanings||[]).forEach(m=>ms.push(m)));if(!ms.length)return null;
+ const m=ms.find(x=>want&&POSM[x.partOfSpeech]===want)||ms[0],d=(m.definitions||[])[0];let sen='';
+ [m].concat(ms).forEach(mm=>(mm.definitions||[]).forEach(q=>{if(!sen&&q.example)sen=q.example}));
+ return{pos:POSM[m.partOfSpeech]||'',def:d?short(d.definition,120):'',sen:clean(sen)}}
+const fdict=async(w,want)=>pdict(await jget('https://api.dictionaryapi.dev/api/v2/entries/en/'+encodeURIComponent(w)),want);
+async function tat(w){const j=await jget('https://tatoeba.org/en/api_v0/search?from=eng&sort=relevance&query='+encodeURIComponent(w)),re=new RegExp('\\b'+w+'\\b','i');
+ const L=((j&&j.results)||[]).map(x=>clean(x.text)).filter(t=>re.test(t)&&t.length>=18&&t.length<=110).sort((a,b)=>a.length-b.length);return L[0]||''}
+async function gen(){const r=$('root').value.trim().toLowerCase(),my=++rid;
+ if(!/^[a-z]{2,24}$/.test(r)){setSt('Enter a root word (letters only).');return}
+ setSt('Looking up “'+r+'”…');let d=cache[r];
+ if(!d){const pats=/e$/.test(r)&&r.length>3?[r.slice(0,-1)]:/y$/.test(r)?[r,r.slice(0,-1)+'i']:[r];
+  const res=await Promise.all([jget('https://api.dictionaryapi.dev/api/v2/entries/en/'+r)].concat(pats.map(p=>jget('https://api.datamuse.com/words?sp=*'+p+'*&md=dpf&max=1000'))));
+  if(my!==rid)return;const dm=res.slice(1);
+  if(dm.every(x=>x===null)){setSt('Could not reach the dictionary service. Check your connection, or type words manually.');return}
+  d=cache[r]={rj:res[0],dm}}
+ const seen={},C=[];
+ d.dm.forEach(a=>(a||[]).forEach(o=>{const w=o.word;if(!/^[a-z]+$/.test(w)||w===r||seen[w])return;
+  if(!(isDer(w,r)||($('comp').checked&&an(w,r).ok)))return;seen[w]=1;
+  const tg=o.tags||[],f=parseFloat((tg.find(t=>/^f:/.test(t))||'f:0').slice(2))||0,p=((o.defs||[])[0]||'').split('\t');
+  C.push({w,f,pos:POSM[p[0]]||'',def:short(p.slice(1).join(' '),110),sen:''})}));
+ C.sort((a,b)=>b.f-a.f);const L=C.slice(0,+$('max').value||14),rd=pdict(d.rj,'');
+ S.mean=ROOTS[r]||(rd?rd.def:'');$('mean').value=S.mean;S.sel=0;
+ const put=()=>{S.words=L.map(x=>[x.w,x.pos,x.def,x.sen].join(' | ')).join('\n');$('words').value=S.words;render();persist()};
+ put();
+ if(!L.length){setSt('No derivations found for “'+r+'”. Try another root, or tick “Include compounds”.');return}
+ setSt(`Found ${C.length} derivations; showing ${L.length}. Adding sentences…`);let k=0;
+ await Promise.all(L.map(async x=>{const j=await fdict(x.w,x.pos);if(my!==rid)return;
+  if(j){if(j.def)x.def=j.def;if(j.pos)x.pos=j.pos;if(j.sen&&new RegExp('\\b'+x.w,'i').test(j.sen))x.sen=j.sen}
+  if(!x.sen){x.sen=await tat(x.w);if(my!==rid)return}
+  if(x.sen)k++;put()}));
+ if(my===rid)setSt(`“${r}”: ${C.length} derivations found · ${L.length} shown · ${k} with sentences. You can edit any line.`)}
+$('root').addEventListener('input',()=>{if(S.auto){clearTimeout(tmr);tmr=setTimeout(gen,600)}});
+$('root').addEventListener('keydown',e=>{if(e.key==='Enter'){clearTimeout(tmr);gen()}});
+['max','comp','auto'].forEach(id=>$(id).addEventListener('input',()=>{if(S.auto)gen()}));
+$('gen').addEventListener('click',gen);
+fill();sync();render();if(S.auto&&S.root&&(typeof navigator==='undefined'||navigator.onLine!==false))gen();
+</script>
+</body>
+</html>
